@@ -13,8 +13,8 @@ end
 
 -(a::PowerSeriesType) = PowerSeriesType(-a.re, -a.ep)
 -(a::PowerSeriesType, b::PowerSeriesType) = PowerSeriesType(a.re - b.re, a.ep - b.ep)
--(a::Real, b::PowerSeriesType) = PowerSeriesType(a - b.re, b.ep)
--(a::PowerSeriesType, b::Real) = PowerSeriesType(a.re - b, a.ep)
+-(a::Real, b::PowerSeriesType) = PowerSeriesType(a - b.re, -b.ep)
+-(a::PowerSeriesType, b::Real) = PowerSeriesType(a.re - b, -a.ep)
 
 *{T<:Real}(a::PowerSeriesType{T}, b::PowerSeriesType{T}) = PowerSeriesType(
   a.re*b.re,
