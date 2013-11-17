@@ -1,11 +1,13 @@
 module PowerSeries
 
-import Base: diff, +, -, *, /, ^, sin, cos, exp, log
+import Base: diff, +, -, *, /, ^, sin, cos, exp, log, show, showcompact
 
 immutable Series{T<:Real} <: Number
   re::T
   ep::Union(T, Series{T})
 end
+
+Series(a, b...) = Series(a, Series(b...))
 
 +(a::Series, b::Series) = Series(a.re + b.re, a.ep + b.ep)
 +(a::Real, b::Series) = Series(a + b.re, b.ep)
@@ -58,6 +60,29 @@ exp(p::Series) = exp(p.re) + pint(diff(p)*exp(restrict(p)))
 sin(p::Series) = sin(p.re) + pint(diff(p)*cos(restrict(p)))
 cos(p::Series) = cos(p.re) - pint(diff(p)*sin(restrict(p)))
 log(p::Series) = log(p.re) + pint(diff(p)/restrict(p))
+
+function _show_rest{T<:Real}(io::IO, method, r::T, e::Series{T})
+  method(r)
+  print(io, ",")
+  _show_rest(io, method, e.re, e.ep)
+end
+
+function _show_rest{T<:Real}(io::IO, method, r::T, e::T)
+  method(r)
+  print(io, ",")
+  method(e)
+  print(io, ")")
+end
+
+function show{T}(io::IO, p::Series{T})
+  print(io, "Series{", T, "}(")
+  _show_rest(io, show, p.re, p.ep)
+end
+
+function showcompact(io::IO, p::Series)
+  print(io, "Series(")
+  _show_rest(io, showcompact, p.re, p.ep)
+end
 
 export Series, pint, restrict
 
