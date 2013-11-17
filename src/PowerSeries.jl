@@ -27,7 +27,8 @@ Series(a, b...) = Series(a, Series(b...))
 *(a::Series, b::Real) = Series(b*a.re, b*a.ep)
 
 function /{T<:Real}(a::Series{T}, b::Series{T})
-  a*(one(T)/b)
+  rb = restrict(b)
+  a/b.re - a*pint(diff(b)/(rb*rb))
 end
 /(a::Series, b::Real) = Series(a.re/b, a.ep/b)
 function /(a::Real, b::Series)
