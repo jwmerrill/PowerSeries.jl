@@ -1,6 +1,6 @@
 module PowerSeries
 
-import Base: diff, +, -, *, /, sin, cos, exp
+import Base: diff, +, -, *, /, ^, sin, cos, exp, log
 
 immutable Series{T<:Real} <: Number
   re::T
@@ -33,6 +33,9 @@ function /(a::Real, b::Series)
   a/b.re - a*pint(diff(b)/(rb*rb))
 end
 
+# TODO, causes warnings
+# ^{T<:Real}(a::Series{T}, b::Real) = Series(a.re^b, b*a.ep^(b - one(T)))
+
 restrict(p::Series) = _restrict(p.re, p.ep)
 
 _restrict{T<:Real}(r::T, e::T) = r
@@ -54,6 +57,7 @@ _pint{T<:Real}(r::T, e::Series{T}, n::T) =
 exp(p::Series) = exp(p.re) + pint(diff(p)*exp(restrict(p)))
 sin(p::Series) = sin(p.re) + pint(diff(p)*cos(restrict(p)))
 cos(p::Series) = cos(p.re) - pint(diff(p)*sin(restrict(p)))
+log(p::Series) = log(p.re) + pint(diff(p)/restrict(p))
 
 export Series, pint, restrict
 
