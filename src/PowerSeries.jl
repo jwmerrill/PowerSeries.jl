@@ -24,6 +24,15 @@ end
 *(a::Real, b::Series) = Series(a*b.re, a*b.ep)
 *(a::Series, b::Real) = Series(b*a.re, b*a.ep)
 
+function /{T<:Real}(a::Series{T}, b::Series{T})
+  a*(one(T)/b)
+end
+/(a::Series, b::Real) = Series(a.re/b, a.ep/b)
+function /(a::Real, b::Series)
+  rb = restrict(b)
+  a/b.re - a*pint(diff(b)/(rb*rb))
+end
+
 restrict(p::Series) = _restrict(p.re, p.ep)
 
 _restrict{T<:Real}(r::T, e::T) = r
