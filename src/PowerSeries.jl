@@ -26,8 +26,13 @@ Series(a, b...) = Series(a, Series(b...))
 *(a::Real, b::Series) = Series(a*b.re, a*b.ep)
 *(a::Series, b::Real) = Series(b*a.re, b*a.ep)
 
+promote_depth{T}(a::Series{T}, b::Series{T}) = Series(b.re, promote_depth(a.ep, b.ep))
+promote_depth{T}(a::Series{T}, b::T) = Series(b, promote_depth(a.ep, zero(T)))
+promote_depth{T}(a::T, b::Series{T}) = b
+promote_depth{T}(a::T, b::T) = b
+
 function /{T<:Real}(a::Series{T}, b::Series{T})
-  rb = restrict(b)
+  rb = restrict(promote_depth(a, b))
   a/b.re - a*pint(diff(b)/(rb*rb))
 end
 /(a::Series, b::Real) = Series(a.re/b, a.ep/b)
