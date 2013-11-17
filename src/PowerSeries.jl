@@ -32,7 +32,7 @@ promote_depth{T}(a::T, b::Series{T}) = b
 promote_depth{T}(a::T, b::T) = b
 
 function /{T<:Real}(a::Series{T}, b::Series{T})
-  rb = restrict(promote_depth(a, b))
+  rb = promote_depth(a.ep, b) # same as restrict(promote_depth(a, b))
   a/b.re - a*pint(diff(b)/(rb*rb))
 end
 /(a::Series, b::Real) = Series(a.re/b, a.ep/b)
