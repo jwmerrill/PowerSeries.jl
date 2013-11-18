@@ -61,6 +61,13 @@ _pint{T<:Number}(r::T, e::T, n::T) = Series(r/n, e/(n + one(T)))
 _pint{T<:Number}(r::T, e::Series{T}, n::T) =
   Series(r/n, _pint(e.re, e.ep, n + one(T)))
 
+_perturb{T}(r::T, e::Series{T}) = Series(r, _perturb(e.re, e.ep))
+_perturb{T}(r::T, e::T) = Series(r, Series(e, zero(e)))
+perturb(a::Series) = _perturb(a.re, a.ep)
+perturb{T<:Number}(a::T) = Series(a, one(T))
+
+diff(fn::Function) = (a) -> diff(fn(perturb(a)))
+
 exp(p::Series) = exp(p.re) + pint(diff(p)*exp(restrict(p)))
 sin(p::Series) = sin(p.re) + pint(diff(p)*cos(restrict(p)))
 cos(p::Series) = cos(p.re) - pint(diff(p)*sin(restrict(p)))
