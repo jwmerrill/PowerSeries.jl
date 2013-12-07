@@ -18,21 +18,14 @@ Series(a, b, c...) = Series(a, Series(b, c...))
 -(a::Number, b::Series) = Series(a - b.re, -b.ep)
 -(a::Series, b::Number) = Series(a.re - b, -a.ep)
 
-*{T<:Number}(a::Series{T}, b::Series{T}) = Series(
-  a.re*b.re,
-  a.re*b.ep + b.re*a.ep +
-  restrict(Series(zero(T), a.ep*b.ep))
-)
+# TODO, with good promote rules, won't need the special definition
+*{T<:Number}(a::Series{T}, b::Series{T}) =
+  a.re*b.re + pint(diff(a)*restrict(b) + restrict(a)*diff(b))
 *(a::Number, b::Series) = Series(a*b.re, a*b.ep)
 *(a::Series, b::Number) = Series(b*a.re, b*a.ep)
 
-promote_depth{T}(a::Series{T}, b::Series{T}) = Series(b.re, promote_depth(a.ep, b.ep))
-promote_depth{T}(a::Series{T}, b::T) = Series(b, promote_depth(a.ep, zero(T)))
-promote_depth{T}(a::T, b::Series{T}) = b
-promote_depth{T}(a::T, b::T) = b
-
 function /{T<:Number}(a::Series{T}, b::Series{T})
-  rb = promote_depth(a.ep, b) # same as restrict(promote_depth(a, b))
+  rb = restrict(b)
   a/b.re - a*pint(diff(b)/(rb*rb))
 end
 /{T<:Number}(a::Series{T}, b::T) = Series(a.re/b, a.ep/b)
