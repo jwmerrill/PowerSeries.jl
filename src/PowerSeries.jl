@@ -91,4 +91,6 @@ end
 
 export Series, pint, restrict
 
+include("Dual.jl")
+
 end
