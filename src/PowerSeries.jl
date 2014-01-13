@@ -1,96 +1,137 @@
 module PowerSeries
 
-import Base: diff, +, -, *, /, ^, sin, cos, exp, log, show, showcompact
+import Base: sin, cos, exp, log
 
-immutable Series{T<:Number} <: Number
-  re::T
-  ep::Union(T, Series{T})
+abstract AbstractSeries{T<:Real, N} <: Number
+
+immutable Series1{T} <: AbstractSeries{T, 1}
+  c0::T
+  c1::T
 end
 
-Series(a, b, c...) = Series(a, Series(b, c...))
-
-+(a::Series, b::Series) = Series(a.re + b.re, a.ep + b.ep)
-+(a::Number, b::Series) = Series(a + b.re, b.ep)
-+(a::Series, b::Number) = Series(a.re + b, a.ep)
-
--(a::Series) = Series(-a.re, -a.ep)
--(a::Series, b::Series) = Series(a.re - b.re, a.ep - b.ep)
--(a::Number, b::Series) = Series(a - b.re, -b.ep)
--(a::Series, b::Number) = Series(a.re - b, -a.ep)
-
-# TODO, with good promote rules, won't need the special definition
-*{T<:Number}(a::Series{T}, b::Series{T}) =
-  a.re*b.re + pint(diff(a)*restrict(b) + restrict(a)*diff(b))
-*(a::Number, b::Series) = Series(a*b.re, a*b.ep)
-*(a::Series, b::Number) = Series(b*a.re, b*a.ep)
-
-function /{T<:Number}(a::Series{T}, b::Series{T})
-  rb = restrict(b)
-  a/b.re - a*pint(diff(b)/(rb*rb))
-end
-/{T<:Number}(a::Series{T}, b::T) = Series(a.re/b, a.ep/b)
-function /{T<:Number}(a::T, b::Series{T})
-  rb = restrict(b)
-  a/b.re - a*pint(diff(b)/(rb*rb))
+immutable Series2{T} <: AbstractSeries{T, 2}
+  c0::T
+  c1::T
+  c2::T
 end
 
-^{T<:Number}(a::Series{T}, b::Number) = Series(a.re^b, b*a.ep^(b - one(T)))
-
-restrict(p::Series) = _restrict(p.re, p.ep)
-
-_restrict{T<:Number}(r::T, e::T) = r
-_restrict{T<:Number}(r::T, e::Series{T}) = Series(r, _restrict(e.re, e.ep))
-
-diff{T<:Number}(p::T) = zero(T)
-diff{T<:Number}(p::Series{T}) = _diff(p.ep, one(T))
-
-_diff{T<:Number}(p::T, n::T) = n*p
-_diff{T<:Number}(p::Series{T}, n::T) = Series(n*p.re, _diff(p.ep, n + one(T)))
-
-pint{T<:Number}(p::T) = Series(zero(T), p)
-pint{T<:Number}(p::Series{T}) = Series(zero(T), _pint(p.re, p.ep, one(T)))
-
-_pint{T<:Number}(r::T, e::T, n::T) = Series(r/n, e/(n + one(T)))
-_pint{T<:Number}(r::T, e::Series{T}, n::T) =
-  Series(r/n, _pint(e.re, e.ep, n + one(T)))
-
-_perturb{T}(r::T, e::Series{T}) = Series(r, _perturb(e.re, e.ep))
-_perturb{T}(r::T, e::T) = Series(r, Series(e, zero(e)))
-perturb(a::Series) = _perturb(a.re, a.ep)
-perturb{T<:Number}(a::T) = Series(a, one(T))
-
-diff(fn::Function) = (a) -> diff(fn(perturb(a)))
-
-exp(p::Series) = exp(p.re) + pint(diff(p)*exp(restrict(p)))
-sin(p::Series) = sin(p.re) + pint(diff(p)*cos(restrict(p)))
-cos(p::Series) = cos(p.re) - pint(diff(p)*sin(restrict(p)))
-log(p::Series) = log(p.re) + pint(diff(p)/restrict(p))
-
-function _show_rest{T<:Number}(io::IO, method, r::T, e::Series{T})
-  method(r)
-  print(io, ",")
-  _show_rest(io, method, e.re, e.ep)
+immutable Series3{T} <: AbstractSeries{T, 3}
+  c0::T
+  c1::T
+  c2::T
+  c3::T
 end
 
-function _show_rest{T<:Number}(io::IO, method, r::T, e::T)
-  method(r)
-  print(io, ",")
-  method(e)
-  print(io, ")")
+series_types = [Series1, Series2, Series3]
+
+function series(n...)
+  l = length(n)
+  series_types[l - 1](promote(n...)...)
 end
 
-function show{T}(io::IO, p::Series{T})
-  print(io, "Series{", T, "}(")
-  _show_rest(io, show, p.re, p.ep)
+restrict(x::Series1) = x.c0
+restrict(x::Series2) = Series1(x.c0, x.c1)
+restrict(x::Series3) = Series2(x.c0, x.c1, x.c2)
+
+constant(x::Series1) = x.c0
+constant(x::Series2) = x.c0
+constant(x::Series3) = x.c0
+constant(x::Real) = x
+
+# Horner's method
+polyval(x::Series1, eps::Real) = x.c0 + eps*x.c1
+polyval(x::Series2, eps::Real) = x.c0 + eps*(x.c1 + eps*x.c2)
+polyval(x::Series3, eps::Real) = x.c0 + eps*(x.c1 + eps*(x.c2 + eps*x.c3))
+
+polyder(x::Real) = zero(typeof(x))
+polyder(x::Series1) = x.c1
+polyder(x::Series2) = Series1(x.c1, 2*x.c2)
+polyder(x::Series3) = Series2(x.c1, 2*x.c2, 3*x.c3)
+
+polyint(x::Real) = Series1(zero(typeof(x)), x)
+polyint{T}(x::Series1{T}) = Series2(zero(T), x.c0, x.c1/2)
+polyint{T}(x::Series2{T}) = Series3(zero(T), x.c0, x.c1/2, x.c2/3)
+
++(x::Series1, y::Series1) = Series1(x.c0 + y.c0, x.c1 + y.c1)
++(x::Series2, y::Series2) = Series2(x.c0 + y.c0, x.c1 + y.c1, x.c2 + y.y2)
++(x::Series3, y::Series3) = Series3(x.c0 + y.c0, x.c1 + y.c1, x.c2 + y.c2, x.c3 + y.c3)
+
++{T<:Real, S}(c::T, x::Series1{S}) = Series1{promote_type(T, S)}(c + x.c0, x.c1)
++{T<:Real, S}(c::T, x::Series2{S}) = Series2{promote_type(T, S)}(c + x.c0, x.c1, x.c2)
++{T<:Real, S}(c::T, x::Series3{S}) = Series3{promote_type(T, S)}(c + x.c0, x.c1, x.c2, x.c3)
+
++{T<:Real, S}(x::Series1{S}, c::T) = Series1{promote_type(T, S)}(x.c0 + c, x.c1)
++{T<:Real, S}(x::Series2{S}, c::T) = Series2{promote_type(T, S)}(x.c0 + c, x.c1, x.c2)
++{T<:Real, S}(x::Series3{S}, c::T) = Series3{promote_type(T, S)}(x.c0 + c, x.c1, x.c2, x.c3)
+
+-(x::Series1) = Series1(-x.c0, -x.c1)
+-(x::Series2) = Series2(-x.c0, -x.c1, -x.c2)
+-(x::Series3) = Series3(-x.c0, -x.c1, -x.c2, -x.c3)
+
+-(x::Series1, y::Series1) = Series1(x.c0 - y.c0, x.c1 - y.c1)
+-(x::Series2, y::Series2) = Series2(x.c0 - y.c0, x.c1 - y.c1, x.c2 - y.y2)
+-(x::Series3, y::Series3) = Series3(x.c0 - y.c0, x.c1 - y.c1, x.c2 - y.c2, x.c3 - y.c3)
+
+-{T<:Real, S}(c::T, x::Series1{S}) = Series1{promote_type(T, S)}(c - x.c0, -x.c1)
+-{T<:Real, S}(c::T, x::Series2{S}) = Series2{promote_type(T, S)}(c - x.c0, -x.c1, -x.c2)
+-{T<:Real, S}(c::T, x::Series3{S}) = Series3{promote_type(T, S)}(c - x.c0, -x.c1, -x.c2, -x.c3)
+
+-{T<:Real, S}(x::Series1{S}, c::T) = Series1{promote_type(T, S)}(x.c0 - c, x.c1)
+-{T<:Real, S}(x::Series2{S}, c::T) = Series2{promote_type(T, S)}(x.c0 - c, x.c1, x.c2)
+-{T<:Real, S}(x::Series3{S}, c::T) = Series3{promote_type(T, S)}(x.c0 - c, x.c1, x.c2, x.c3)
+
+*(x::Series1, y::Series1) = Series1(x.c0*y.c0, x.c0*y.c1 + x.c1*y.c0)
+*(x::Series2, y::Series2) = Series2(x.c0*y.c0, x.c0*y.c1 + x.c1*y.c0, x.c0*y.c2 + x.c1*y.c1 + x.c2*y.c0)
+*(x::Series3, y::Series3) = Series3(
+  x.c0*y.c0,
+  x.c0*y.c1 + x.c1*y.c0,
+  x.c0*y.c2 + x.c1*y.c1 + x.c2*y.c0,
+  x.c0*y.c3 + x.c1*y.c2 + x.c2*y.c1 + x.c3*y.c0
+)
+
+*(c::Real, x::Series1) = Series1(c*x.c0, c*x.c1)
+*(c::Real, x::Series2) = Series2(c*x.c0, c*x.c1, c*x.c2)
+*(c::Real, x::Series3) = Series3(c*x.c0, c*x.c1, c*x.c2, c*x.c3)
+
+*(x::Series1, c::Real) = Series1(x.c0*c, x.c1*c)
+*(x::Series2, c::Real) = Series2(x.c0*c, x.c1*c, x.c2*c)
+*(x::Series3, c::Real) = Series3(x.c0*c, x.c1*c, x.c2*c, x.c3*c)
+
+function /{T, S, N}(x::AbstractSeries{T, N}, y::AbstractSeries{S, N})
+  ry = restrict(y)
+  constant(x)/constant(y) + polyint(polyder(x)/ry - restrict(x)*polyder(y)/(ry*ry))
 end
 
-function showcompact(io::IO, p::Series)
-  print(io, "Series(")
-  _show_rest(io, showcompact, p.re, p.ep)
+function /(c::Real, y::AbstractSeries)
+  ry = restrict(y)
+  c/constant(y) - polyint(c*polyder(y)/(ry*ry))
 end
 
-export Series, pint, restrict
+/(x::Series1, c::Real) = Series1(x.c0/c, x.c1/c)
+/(x::Series2, c::Real) = Series2(x.c0/c, x.c1/c, x.c2/c)
+/(x::Series3, c::Real) = Series3(x.c0/c, x.c1/c, x.c2/c, x.c3/c)
 
-include("Dual.jl")
+function ^{T, S, N}(x::AbstractSeries{T, N}, y::AbstractSeries{S, N})
+  rx = restrict(x)
+  ry = restrict(y)
+  constant(x)^constant(y) + polyint(polyder(x)*rx^(ry - 1)*ry + log(rx)*rx^ry*polyder(y))
+end
+
+_series_pow_const(x, y) = constant(x)^y + polyint(polyder(x)*restrict(x)^(y - 1)*y)
+
+# First two are to fix redundancy warnings
+^(x::AbstractSeries, y::Rational) = _series_pow_const(x, y)
+^(x::AbstractSeries, y::Integer) = _series_pow_const(x, y)
+^(x::AbstractSeries, y::Real) = _series_pow_const(x, y)
+
+^(::MathConst{:e}, y::AbstractSeries) = exp(y)
+^(x::Real, y::AbstractSeries) = x^constant(y) + polyint(log(x)*x^restrict(y)*polyder(y))
+
+sin(x::AbstractSeries) = sin(constant(x)) + polyint(polyder(x)*cos(restrict(x)))
+cos(x::AbstractSeries) = cos(constant(x)) - polyint(polyder(x)*sin(restrict(x)))
+exp(x::AbstractSeries) = exp(constant(x)) + polyint(polyder(x)*exp(restrict(x)))
+log(x::AbstractSeries) = log(constant(x)) + polyint(polyder(x)/restrict(x))
+
+export series, restrict, constant, polyint, polyval, polyder
 
 end
