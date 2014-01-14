@@ -1,6 +1,6 @@
 module PowerSeries
 
-import Base: sin, cos, exp, log
+import Base: sqrt, exp, log, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, asinh, acosh, atanh, csc, sec, cot, acsc, asec, acot, csch, sech, coth, acsch, asech, acoth, gamma, polygamma, floor, ceil, round, sign, abs
 
 abstract AbstractSeries{T<:Real, N} <: Number
 
@@ -53,10 +53,63 @@ _series_pow_const(x, y) = constant(x)^y + polyint(polyder(x)*restrict(x)^(y - 1)
 ^(::MathConst{:e}, y::AbstractSeries) = exp(y)
 ^(x::Real, y::AbstractSeries) = x^constant(y) + polyint(log(x)*x^restrict(y)*polyder(y))
 
-sin(x::AbstractSeries) = sin(constant(x)) + polyint(polyder(x)*cos(restrict(x)))
-cos(x::AbstractSeries) = cos(constant(x)) - polyint(polyder(x)*sin(restrict(x)))
+sqrt(x::AbstractSeries) = sqrt(constant(x)) + polyint(polyder(x)/(2*sqrt(restrict(x))))
 exp(x::AbstractSeries) = exp(constant(x)) + polyint(polyder(x)*exp(restrict(x)))
 log(x::AbstractSeries) = log(constant(x)) + polyint(polyder(x)/restrict(x))
+sin(x::AbstractSeries) = sin(constant(x)) + polyint(polyder(x)*cos(restrict(x)))
+cos(x::AbstractSeries) = cos(constant(x)) - polyint(polyder(x)*sin(restrict(x)))
+tan(x::AbstractSeries) = tan(constant(x)) - polyint(polyder(x)*sec(restrict(x))^2)
+asin(x::AbstractSeries) = asin(constant(x)) + polyint(polyder(x)/sqrt(1 - restrict(x)^2))
+acos(x::AbstractSeries) = acos(constant(x)) - polyint(polyder(x)/sqrt(1 - restrict(x)^2))
+atan(x::AbstractSeries) = atan(constant(x)) - polyint(polyder(x)/(1 + restrict(x)^2))
+sinh(x::AbstractSeries) = sinh(constant(x)) + polyint(polyder(x)*cosh(restrict(x)))
+cosh(x::AbstractSeries) = cosh(constant(x)) + polyint(polyder(x)*sinh(restrict(x)))
+tanh(x::AbstractSeries) = tanh(constant(x)) + polyint(polyder(x)*sech(restrict(x))^2)
+asinh(x::AbstractSeries) = asinh(constant(x)) + polyint(polyder(x)/sqrt(restrict(x)^2 + 1))
+acosh(x::AbstractSeries) = acosh(constant(x)) + polyint(polyder(x)/sqrt(restrict(x)^2 - 1))
+atanh(x::AbstractSeries) = atanh(constant(x)) + polyint(polyder(x)/(1 - restrict(x)^2))
+csc(x::AbstractSeries) = csc(constant(x)) - polyint(polyder(x)*cot(restrict(x))*csc(restrict(x)))
+sec(x::AbstractSeries) = sec(constant(x)) + polyint(polyder(x)*tan(restrict(x))*sec(restrict(x)))
+cot(x::AbstractSeries) = cot(constant(x)) - polyint(polyder(x)*csc(restrict(x))^2)
+
+acsc(x::AbstractSeries) =
+  acsc(constant(x)) - polyint(polyder(x)/(restrict(x)^2*sqrt(1-1/restrict(x)^2)))
+
+asec(x::AbstractSeries) =
+  asec(constant(x)) + polyint(polyder(x)/(restrict(x)^2*sqrt(1-1/restrict(x)^2)))
+
+acot(x::AbstractSeries) = acot(constant(x)) - polyint(polyder(x)/(1 + restrict(x)^2))
+
+csch(x::AbstractSeries) =
+  csch(constant(x)) - polyint(polyder(x)*coth(restrict(x))*csch(restrict(x)))
+
+sech(x::AbstractSeries) =
+  sech(constant(x)) - polyint(polyder(x)*tanh(restrict(x))*sech(restrict(x)))
+
+coth(x::AbstractSeries) = coth(constant(x)) - polyint(polyder(x)*csch(restrict(x))^2)
+
+acsch(x::AbstractSeries) =
+  acsch(constant(x)) - polyint(polyder(x)/(restrict(x)^2*sqrt(1+1/restrict(x)^2)))
+
+function asech(x::AbstractSeries)
+  rx = restrict(x)
+  asech(constant(x)) - polyint(polyder(x)*sqrt((1 - rx)/(1 + rx))/(rx*(rx - 1)))
+end
+
+acoth(x::AbstractSeries) = acoth(constant(x)) + polyint(polyder(x)/(1 - restrict(x)^2))
+
+gamma(x::AbstractSeries) =
+  gamma(constant(x)) + polyint(polyder(x)*gamma(restrict(x))*polygamma(0, restrict(x)))
+
+polygamma(k, x::AbstractSeries) =
+  polygamma(k, constant(x)) + polyint(polyder(x)*polygamma(k + 1, restrict(x)))
+
+# TODO, what about the jump points
+floor(x::AbstractSeries) = floor(constant(x)) + polyint(polyder(x)*0)
+ceil(x::AbstractSeries) = ceil(constant(x)) + polyint(polyder(x)*0)
+round(x::AbstractSeries) = round(constant(x)) + polyint(polyder(x)*0)
+sign(x::AbstractSeries) = sign(constant(x)) + polyint(polyder(x)*0)
+abs(x::AbstractSeries) = abs(constant(x)) + polyint(polyder(x)*sign(restrict(x)))
 
 export series, restrict, constant, polyint, polyval, polyder
 
