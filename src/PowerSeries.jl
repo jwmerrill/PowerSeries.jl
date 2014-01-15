@@ -13,15 +13,24 @@ push!(series_types, generate_type(1))
 push!(series_types, generate_type(2))
 push!(series_types, generate_type(3))
 
-function series(n...)
-  l = length(n)
-
-  # Generate new types on demand
-  while l > length(series_types)
+function generate_types_upto(order)
+  while order > length(series_types)
     push!(series_types, generate_type(length(series_types) + 1))
   end
+end
 
-  return series_types[l - 1](promote(n...)...)
+function get_series_type(order)
+  generate_types_upto(order)
+  return series_types[order]
+end
+
+function series(n...)
+  return get_series_type(length(n) - 1)(promote(n...)...)
+end
+
+macro series(n...)
+  generate_types_upto(length(n) - 1)
+  Expr(:call, typ(length(n) - 1), map(esc, n)...)
 end
 
 constant(x::Real) = x
@@ -111,6 +120,6 @@ round(x::AbstractSeries) = round(constant(x)) + polyint(polyder(x)*0)
 sign(x::AbstractSeries) = sign(constant(x)) + polyint(polyder(x)*0)
 abs(x::AbstractSeries) = abs(constant(x)) + polyint(polyder(x)*sign(restrict(x)))
 
-export series, restrict, constant, polyint, polyval, polyder
+export series, @series, restrict, constant, polyint, polyval, polyder
 
 end
