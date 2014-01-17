@@ -3,7 +3,7 @@ PowerSeries.jl
 
 Truncated Power Series for Julia
 
-PowerSeries.jl exports a Series type that represents a truncated power series by its coefficients. You can do arithmetic on Series and apply functions to series just as you would Real or Complex numbers. Here's an example session:
+PowerSeries.jl exports Series types that represent truncated power series by their coefficients. You can do arithmetic on Series and apply functions to series just as you would Real or Complex numbers. Here's an example session:
 
 ```julia
 julia> using PowerSeries
@@ -40,9 +40,6 @@ Series5{Float64}(0.0,1.0,0.0,-0.16666666666666666,0.0,0.008333333333333333)
 julia> series(0.0, 1.0, -1.0/2, 1.0/3, -1.0/4, 1.0/5)
 Series5{Float64}(0.0,1.0,-0.5,0.3333333333333333,-0.25,0.2)
 ```
-
-###Status
-PowerSeries.jl is currently a proof of concept. The API may change before it is released as a Julia package.
 
 ###Theory of operation
 Computations of functions of a power series are based on the fundamental theorem of calculus:
