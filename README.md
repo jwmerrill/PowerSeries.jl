@@ -103,14 +103,14 @@ Using this relation, it's easy to derive a composition rule for functions that c
 
 This is essentially an extension of the chain rule from infinitesimal calculus to finite step sizes.
 
-Once differentiation and definite integration are defined on series, this relation allows a simple definition of functions of series. For example, the sin and cosine of series are co-recursively defined as
+Once differentiation and definite integration are defined on series, this relation allows a simple definition of functions of series. For example, the sine and cosine of series are co-recursively defined as
 
 ```julia
 sin(x::AbstractSeries) = sin(constant(x)) + polyint(polyder(x)*cos(restrict(x)))
 cos(x::AbstractSeries) = cos(constant(x)) - polyint(polyder(x)*sin(restrict(x)))
 ```
 
-the general pattern is
+The general pattern is
 
 ```julia
 f(x::AbstractSeries) = f(constant(x)) + polyint(polyder(x)*f'(restrict(x)))
