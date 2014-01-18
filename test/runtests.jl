@@ -19,3 +19,9 @@ b = series(1.0, 0.0, 1.0)
 # e.g. 6th order by computing f(Series(x, 1.0, 0.0, 0.0, 0.0, 0.0))
 @assert sin(series(0.0, 1.0, 0.0, 0.0, 0.0, 0.0)) == series(0.0, 1.0, 0.0, -1.0/6.0, 0.0, 1.0/120)
 @assert log(series(1.0, 1.0, 0.0, 0.0, 0.0, 0.0)) == series(0.0, 1.0, -1.0/2, 1.0/3, -1.0/4, 1.0/5)
+
+@assert polyval(a, 0.1) == 1.08
+@assert polyval(a, -0.1) == 0.88
+@assert polyder(a) == series(1.0, -4.0)
+@assert polyint(a) == series(0.0, 1.0, 1.0/2, -2.0/3)
+@assert restrict(a) == series(1.0, 1.0)

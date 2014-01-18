@@ -32,7 +32,7 @@ function generate_type(n::Integer)
   for m = n-1:-1:0
     polyval_body = :($(mem(:x, m)) + eps*$polyval_body)
   end
-  @eval polyval(x::$Typ, eps::Real) = polyval_body
+  @eval polyval(x::$Typ, eps::Real) = $polyval_body
 
   @eval constant(x::$Typ) = x.c0
 
