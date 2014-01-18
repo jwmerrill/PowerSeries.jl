@@ -5,7 +5,7 @@ Truncated Power Series for Julia
 
 [![Build Status](https://travis-ci.org/jwmerrill/PowerSeries.jl.png?branch=master)](https://travis-ci.org/jwmerrill/PowerSeries.jl)
 
-PowerSeries.jl exports Series types that represent truncated power series by their coefficients. You can do arithmetic on Series and apply functions to series just as you would Real or Complex numbers. Here's an example session:
+PowerSeries.jl defines Series types that represent truncated power series by their coefficients. You can do arithmetic on Series and apply functions to series just as you would Real or Complex numbers. Here's an example session:
 
 ```julia
 julia> using PowerSeries
