@@ -96,13 +96,13 @@ julia> ((x) -> (-2exp(-x^2)+4x^2*exp(-x^2)))(2.0)
 Computations of functions of a power series are based on the fundamental theorem of calculus:
 
 ```
-f(x + \epsilon) = f(x) + \int_0^\epsilon dx f'(x + \epsilon)
+f(x + \epsilon) = f(x) + \int_x^{x + \epsilon} dx f'(x)
 ```
 
 Using this relation, it's easy to derive a composition rule for functions that can be applied directly to power series.
 
 ```
-f(g(x + \epsilon)) = f(g(x)) + \int_0^\epsilon dx f'(g(x + \epsilon)) g'(x + \epsilon)
+f(g(x + \epsilon)) = f(g(x)) + \int_x^{x + \epsilon} dx f'(g(x)) g'(x)
 ```
 
 This is essentially an extension of the chain rule from infinitesimal calculus to finite step sizes.
@@ -112,5 +112,3 @@ Once differentiation and definite integration are defined on series, this relati
 ```julia
 sin(x::AbstractSeries) = sin(constant(x)) + polyint(polyder(x)*cos(restrict(x)))
 ```
-
-where `constant(x)` is the constant term in the series `x`, `polyint` is the definite integral, `polyder` is the series derivative, and `restrict` truncates a series of order `o(x^n)` to `o(x^{n-1})`.
