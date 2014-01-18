@@ -86,13 +86,11 @@ julia> f2(2.0)
 # Compare to the symbolic second derivative
 julia> ((x) -> (-2exp(-x^2)+4x^2*exp(-x^2)))(2.0)
 0.25641894444227853
-
-# For taking first derivatives of code, see also DualNumbers.jl, and for taking
-# symbolic derivatives, see the differentiate method of Calculus.jl.
-# 
-# Truncated series have theoretical performance advantages over symbolic derivatives
-# for either deeply nested functions or high order derivatives.
 ```
+
+For taking first derivatives of code, see also [DualNumbers.jl](https://github.com/scidom/DualNumbers.jl), and for taking symbolic derivatives, see the `differentiate` method of [Calculus.jl](https://github.com/johnmyleswhite/Calculus.jl).
+
+Truncated series have theoretical performance advantages over symbolic derivatives for either deeply nested functions or high order derivatives.
 
 ###Theory of operation
 Computations of functions of a power series are based on the fundamental theorem of calculus:
