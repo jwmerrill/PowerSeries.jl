@@ -25,6 +25,10 @@ Series2{Float64}(2.0,1.0,-1.0)
 julia> a*b
 Series2{Float64}(1.0,1.0,-1.0)
 
+# Extract the constant term of a series
+julia> constant(a)
+1.0
+
 # Functions with known derivatives can easily be overloaded to operate on
 # power series.
 # You can generate the taylor series of a function about a point x up to
@@ -39,6 +43,53 @@ julia> series(0.0, 1.0, 0.0, -1.0/6.0, 0.0, 1.0/120)
 Series5{Float64}(0.0,1.0,0.0,-0.16666666666666666,0.0,0.008333333333333333)
 julia> series(0.0, 1.0, -1.0/2, 1.0/3, -1.0/4, 1.0/5)
 Series5{Float64}(0.0,1.0,-0.5,0.3333333333333333,-0.25,0.2)
+
+# Take the derivative of a series
+julia> polyder(a)
+Series1{Float64}(1.0,-4.0)
+
+# Integrate a series term by term. Note that by convention, the constant term is 0.
+julia> polyint(a)
+Series3{Float64}(0.0,1.0,0.5,-0.6666666666666666)
+
+julia> @assert polyder(polyint(a)) == a
+
+# Truncate a series to a series 1 order lower
+julia> restrict(a)
+Series1{Float64}(1.0,1.0)
+
+# Restricting a first order series returns a real number
+julia> restrict(restrict(a))
+1.0
+
+# polyint, polydir, and restrict are the only operations that change the order of
+# a series. Arithmetic on series of different orders is disallowed because
+# relevant terms in the lower order series may have been dropped at intermediate
+# steps.
+julia> series(1.0, 1.0) + series(1.0, 2.0, 3.0)
+ERROR: no promotion exists for Series1{Float64} and Series2{Float64}
+ in + at promotion.jl:158
+
+# Truncated power series offer one of the best ways to take multiple derivatives
+# of generic mathematical functions.
+julia> f(x) = exp(-x^2)
+f (generic function with 1 method)
+
+julia> f2(x) = polyder(polyder(f(series(x, 1, 0))))
+f2 (generic function with 1 method)
+
+julia> f2(2.0)
+0.25641894444227853
+
+# Compare to the symbolic second derivative
+julia> ((x) -> (-2exp(-x^2)+4x^2*exp(-x^2)))(2.0)
+0.25641894444227853
+
+# For taking first derivatives of code, see also DualNumbers.jl, and for taking
+# symbolic derivatives, see the differentiate method of Calculus.jl.
+# 
+# Truncated series have theoretical performance advantages over symbolic derivatives
+# for either deeply nested functions or high order derivatives.
 ```
 
 ###Theory of operation
