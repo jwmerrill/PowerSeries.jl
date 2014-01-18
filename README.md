@@ -97,20 +97,25 @@ julia> ((x) -> (-2exp(-x^2)+4x^2*exp(-x^2)))(2.0)
 ###Theory of operation
 Computations of functions of a power series are based on the fundamental theorem of calculus:
 
-```
-f(x + \epsilon) = f(x) + \int_x^{x + \epsilon} dx f'(x)
-```
+![equation-1](http://latex.codecogs.com/png.latex?f%28x%20+%20%5Cepsilon%29%20%3D%20f%28x%29%20+%20%5Cint_x%5E%7Bx%20+%20%5Cepsilon%7D%20dx%20f%27%28x%29)
 
 Using this relation, it's easy to derive a composition rule for functions that can be applied directly to power series.
 
-```
-f(g(x + \epsilon)) = f(g(x)) + \int_x^{x + \epsilon} dx f'(g(x)) g'(x)
-```
+![equation-2](http://latex.codecogs.com/png.latex?f%28g%28x%20+%20%5Cepsilon%29%29%20%3D%20f%28g%28x%29%29%20+%20%5Cint_x%5E%7Bx%20+%20%5Cepsilon%7D%20dx%20f%27%28g%28x%29%29%20g%27%28x%29)
 
 This is essentially an extension of the chain rule from infinitesimal calculus to finite step sizes.
 
-Once differentiation and definite integration are defined on series, this relation allows a simple definition of functions of series. For example, the sin of a series is defined as
+Once differentiation and definite integration are defined on series, this relation allows a simple definition of functions of series. For example, the sin and cosine of series are co-recursively defined as
 
 ```julia
 sin(x::AbstractSeries) = sin(constant(x)) + polyint(polyder(x)*cos(restrict(x)))
+cos(x::AbstractSeries) = cos(constant(x)) - polyint(polyder(x)*sin(restrict(x)))
 ```
+
+the general pattern is
+
+```julia
+f(x::AbstractSeries) = f(constant(x)) + polyint(polyder(x)*f'(restrict(x)))
+```
+
+where `f'` should be replaced by a known derivative function.
