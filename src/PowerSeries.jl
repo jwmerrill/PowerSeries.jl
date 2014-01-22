@@ -1,17 +1,12 @@
 module PowerSeries
 
-import Base: sqrt, exp, log, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, asinh, acosh, atanh, csc, sec, cot, acsc, asec, acot, csch, sech, coth, acsch, asech, acoth, gamma, polygamma, floor, ceil, round, sign, abs
+import Base: convert, sqrt, exp, log, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, asinh, acosh, atanh, csc, sec, cot, acsc, asec, acot, csch, sech, coth, acsch, asech, acoth, gamma, polygamma, floor, ceil, round, sign, abs
 
 abstract AbstractSeries{T<:Real, N} <: Number
 
 include("generate_type.jl")
 
 series_types = DataType[]
-
-# Generate series types up to 3rd order
-push!(series_types, generate_type(1))
-push!(series_types, generate_type(2))
-push!(series_types, generate_type(3))
 
 function generate_types_upto(order)
   while order > length(series_types)
@@ -119,6 +114,8 @@ ceil(x::AbstractSeries) = ceil(constant(x)) + polyint(polyder(x)*0)
 round(x::AbstractSeries) = round(constant(x)) + polyint(polyder(x)*0)
 sign(x::AbstractSeries) = sign(constant(x)) + polyint(polyder(x)*0)
 abs(x::AbstractSeries) = abs(constant(x)) + polyint(polyder(x)*sign(restrict(x)))
+
+generate_types_upto(3)
 
 export series, @series, restrict, constant, polyint, polyval, polyder
 

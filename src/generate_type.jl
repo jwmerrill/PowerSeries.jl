@@ -27,6 +27,9 @@ function generate_type(n::Integer)
     @eval polyint(x::Real) = Series1(zero(typeof(x)), x)
   end
 
+  @eval $Typ(x::Real) = $Typ(x, $([:(zero(x)) for i = 1:n]...))
+  @eval convert{T<:Real}(::Type{$Typ{T}}, x::Real) = $Typ(convert(T, x))
+
   #Horner's method
   polyval_body = mem(:x, n)
   for m = n-1:-1:0
