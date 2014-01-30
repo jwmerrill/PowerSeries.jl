@@ -84,13 +84,24 @@ julia> f2(2.0)
 0.25641894444227853
 
 # Compare to the symbolic second derivative
-julia> ((x) -> (-2exp(-x^2)+4x^2*exp(-x^2)))(2.0)
+julia> let x = 2.0; -2exp(-x^2)+4x^2*exp(-x^2); end
 0.25641894444227853
+
+# PowerSeries comes with types defined for series up to order 7. By default,
+# trying to construct a higher order series is a type error.
+julia> series(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+ERROR: no method series(Int64, Int64, Int64, Int64, Int64, Int64, Int64, Int64, Int64, Int64)
+
+# If you want to work with higher order series, you can generate types up
+# to a given order with PowerSeries.generate(order)
+julia> PowerSeries.generate(9)
+julia> series(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+Series9{Int64}(0,1,2,3,4,5,6,7,8,9)
 ```
 
 For taking first derivatives of code, see also [DualNumbers.jl](https://github.com/scidom/DualNumbers.jl), and for taking symbolic derivatives, see the `differentiate` method of [Calculus.jl](https://github.com/johnmyleswhite/Calculus.jl).
 
-Truncated series have theoretical performance advantages over symbolic derivatives for either deeply nested functions or high order derivatives.
+Truncated series have performance advantages over symbolic derivatives for either deeply nested functions or high order derivatives.
 
 ###Theory of operation
 Computations of functions of a power series are based on the fundamental theorem of calculus:

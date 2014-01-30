@@ -1,9 +1,10 @@
 using PowerSeries
 
+
 function series_loop()
   accum = 0.0
   for i = 1:10000
-    accum += polyder(sin(@series(1.0*i, 1.0)))
+    accum += polyder(sin(series(1.0*i, 1.0)))
   end
   return accum
 end

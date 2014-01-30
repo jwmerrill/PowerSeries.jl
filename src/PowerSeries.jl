@@ -8,24 +8,10 @@ include("generate_type.jl")
 
 series_types = DataType[]
 
-function generate_types_upto(order)
+function generate(order)
   while order > length(series_types)
     push!(series_types, generate_type(length(series_types) + 1))
   end
-end
-
-function get_series_type(order)
-  generate_types_upto(order)
-  return series_types[order]
-end
-
-function series(n...)
-  return get_series_type(length(n) - 1)(promote(n...)...)
-end
-
-macro series(n...)
-  generate_types_upto(length(n) - 1)
-  Expr(:call, typ(length(n) - 1), map(esc, n)...)
 end
 
 constant(x::Real) = x
@@ -115,8 +101,8 @@ round(x::AbstractSeries) = round(constant(x)) + polyint(polyder(x)*0)
 sign(x::AbstractSeries) = sign(constant(x)) + polyint(polyder(x)*0)
 abs(x::AbstractSeries) = abs(constant(x)) + polyint(polyder(x)*sign(restrict(x)))
 
-generate_types_upto(3)
+generate(7)
 
-export series, @series, restrict, constant, polyint, polyval, polyder
+export series, restrict, constant, polyint, polyval, polyder
 
 end

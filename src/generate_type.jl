@@ -28,6 +28,11 @@ function generate_type(n::Integer)
   end
 
   @eval $Typ(x::Real) = $Typ(x, $([:(zero(x)) for i = 1:n]...))
+
+  syms = [gensym() for i=0:n]
+
+  @eval series($(syms...)) = $Typ(promote($(syms...))...)
+
   @eval convert{T<:Real}(::Type{$Typ{T}}, x::Real) = $Typ(convert(T, x))
 
   #Horner's method

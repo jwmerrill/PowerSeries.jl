@@ -25,3 +25,12 @@ b = series(1.0, 0.0, 1.0)
 @assert polyder(a) == series(1.0, -4.0)
 @assert polyint(a) == series(0.0, 1.0, 1.0/2, -2.0/3)
 @assert restrict(a) == series(1.0, 1.0)
+
+# Power series are one of the best ways to take higher order derivatives
+# of generic functions.
+#
+# This example tests promotion rules in the constructor because of the
+# 1 and 0, instead of 1.0 and 0.0
+f(x) = exp(-x^2)
+f2(x) = polyder(polyder(f(series(x, 1, 0))))
+@assert f2(2.0) == let x = 2.0; -2exp(-x^2)+4x^2*exp(-x^2); end
