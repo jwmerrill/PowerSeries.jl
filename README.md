@@ -35,6 +35,9 @@ julia> constant(a)
 # power series.
 # You can generate the taylor series of a function about a point x up to
 # e.g. 5th order by computing f(Series(x, 1.0, 0.0, 0.0, 0.0, 0.0))
+julia> x = series(0.0, 1.0, 0.0, 0.0, 0.0, 0.0)
+Series5{Float64}(0.0,1.0,0.0,0.0,0.0,0.0)
+
 julia> sin(x)
 Series5{Float64}(0.0,1.0,0.0,-0.16666666666666666,0.0,0.008333333333333333)
 
