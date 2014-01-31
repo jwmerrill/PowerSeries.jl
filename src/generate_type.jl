@@ -75,9 +75,8 @@ function generate_type(n::Integer)
   @eval *(c::Real, x::$Typ) = $Typ($([:(c*$(mem(:x, i))) for i = 0:n]...))
   @eval *(x::$Typ, c::Real) = $Typ($([:($(mem(:x, i))*c) for i = 0:n]...))
 
-  @eval /(c::Real, x::$Typ) = $Typ($([:(c/$(mem(:x, i))) for i = 0:n]...))
   @eval /(x::$Typ, c::Real) = $Typ($([:($(mem(:x, i))/c) for i = 0:n]...))
-  
+
   # TODO probably a better way than eval to get a type from a string
   return eval(Typ)
 end

@@ -18,8 +18,10 @@ b = series(1.0, 0.0, 1.0)
 # power series.
 # You can generate the taylor series of a function about a point x up to
 # e.g. 6th order by computing f(Series(x, 1.0, 0.0, 0.0, 0.0, 0.0))
-@test sin(series(0.0, 1.0, 0.0, 0.0, 0.0, 0.0)) == series(0.0, 1.0, 0.0, -1.0/6.0, 0.0, 1.0/120)
-@test log(series(1.0, 1.0, 0.0, 0.0, 0.0, 0.0)) == series(0.0, 1.0, -1.0/2, 1.0/3, -1.0/4, 1.0/5)
+x = series(0.0, 1.0, 0.0, 0.0, 0.0, 0.0)
+@test sin(x) == series(0.0, 1.0, 0.0, -1.0/6.0, 0.0, 1.0/120)
+@test log(1 + x) == series(0.0, 1.0, -1.0/2, 1.0/3, -1.0/4, 1.0/5)
+@test 1/(1 - x) == series(1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
 
 @test polyval(a, 0.1) == 1.08
 @test polyval(a, -0.1) == 0.88
