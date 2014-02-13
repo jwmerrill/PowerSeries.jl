@@ -67,7 +67,7 @@ function generate_type(n::Integer)
   )
   @eval -{T<:Real, S}(x::$Typ{S}, c::T) = $Typ{promote_type(T, S)}(
     $(mem(:x, 0)) - c,
-    $([:(-$(mem(:x, i))) for i = 1:n]...)
+    $([:($(mem(:x, i))) for i = 1:n]...)
   )
 
   times_term(i) = :(+($([:($(mem(:x, j))*$(mem(:y, i-j))) for j = 0:i]...)))
