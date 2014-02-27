@@ -72,6 +72,12 @@ function generate_type(n::Integer)
 
   times_term(i) = :(+($([:($(mem(:x, j))*$(mem(:y, i-j))) for j = 0:i]...)))
   @eval *(x::$Typ, y::$Typ) = $Typ($([times_term(i) for i = 0:n]...))
+
+  # Disambiguate bool multiplication. Begrudgingly...
+  # See https://github.com/JuliaLang/julia/issues/5611
+  @eval *(x::Bool, z::$Typ) = ifelse(x,z,zero(z))
+  @eval *(z::$Typ, x::Bool) = x * z
+
   @eval *(c::Real, x::$Typ) = $Typ($([:(c*$(mem(:x, i))) for i = 0:n]...))
   @eval *(x::$Typ, c::Real) = $Typ($([:($(mem(:x, i))*c) for i = 0:n]...))
 
