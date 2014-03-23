@@ -48,3 +48,8 @@ PowerSeries.generate(9)
 @test series(0, 1, 2, 3, 4, 5, 6, 7, 8, 9) != false
 
 @test series(1, 2) - 1 == series(0, 2)
+
+# Regression test for https://github.com/jwmerrill/PowerSeries.jl/issues/6
+let x=series(0.0, 1.0, 0.0, 0.0)
+  @test x*x == x^2
+end

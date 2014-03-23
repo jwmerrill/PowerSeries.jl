@@ -33,7 +33,13 @@ function ^{T, S, N}(x::AbstractSeries{T, N}, y::AbstractSeries{S, N})
   constant(x)^constant(y) + polyint(polyder(x)*rx^(ry - 1)*ry + log(rx)*rx^ry*polyder(y))
 end
 
-_series_pow_const(x, y) = constant(x)^y + polyint(polyder(x)*restrict(x)^(y - 1)*y)
+function _series_pow_const(x, y)
+  if y == 0
+    return one(x)
+  else
+    return constant(x)^y + polyint(polyder(x)*restrict(x)^(y - 1)*y)
+  end
+end
 
 # First two are to fix redundancy warnings
 ^(x::AbstractSeries, y::Rational) = _series_pow_const(x, y)
