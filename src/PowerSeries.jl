@@ -97,8 +97,13 @@ acoth(x::AbstractSeries) = acoth(constant(x)) + polyint(polyder(x)/(1 - restrict
 gamma(x::AbstractSeries) =
   gamma(constant(x)) + polyint(polyder(x)*gamma(restrict(x))*polygamma(0, restrict(x)))
 
-polygamma(k, x::AbstractSeries) =
-  polygamma(k, constant(x)) + polyint(polyder(x)*polygamma(k + 1, restrict(x)))
+_polygamma(k, x) = polygamma(k, constant(x)) + polyint(polyder(x)*polygamma(k + 1, restrict(x)))
+
+# First two defs are to disambiguate with definitions in base
+polygamma(k::Integer, x::AbstractSeries) = _polygamma(k, x)
+polygamma{T<:Number}(a::AbstractArray{T}, x::AbstractSeries) =
+  reshape([_polygamma(a[i], x) for i=1:length(a)], size(a))
+polygamma(k, x::AbstractSeries) = _polygamma(k, x)
 
 # TODO, what about the jump points
 floor(x::AbstractSeries) = floor(constant(x)) + polyint(polyder(x)*0)
