@@ -40,7 +40,9 @@ f2(x) = polyder(polyder(f(series(x, 1, 0))))
 
 # PowerSeries comes with types defined for series up to order 7. By default,
 # trying to construct a higher order series is a type error.
-@test_throws MethodError series(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+if VERSION.major > 0 || (VERSION.major == 0 && VERSION.minor >= 3)
+  @test_throws MethodError series(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+end
 
 # If you want to work with higher order series, you can generate types up
 # to a given order with PowerSeries.generate(order)
