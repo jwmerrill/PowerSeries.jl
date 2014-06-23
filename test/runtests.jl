@@ -38,11 +38,19 @@ f(x) = exp(-x^2)
 f2(x) = polyder(polyder(f(series(x, 1, 0))))
 @test f2(2.0) == let x = 2.0; -2exp(-x^2)+4x^2*exp(-x^2); end
 
+# macro-expansion-time conditional.
+# This is probably not very good or general, but gets around the fact that
+# the signture for @test_throws changed between versions 0.2 and 0.3
+macro when(cond, ex)
+  eval(cond) ? esc(ex) : nothing
+end
+
 # PowerSeries comes with types defined for series up to order 7. By default,
 # trying to construct a higher order series is a type error.
-if VERSION.major > 0 || (VERSION.major == 0 && VERSION.minor >= 3)
+@when(
+  VERSION >= VersionNumber(0,2,typemax(Int64)),
   @test_throws MethodError series(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-end
+)
 
 # If you want to work with higher order series, you can generate types up
 # to a given order with PowerSeries.generate(order)
