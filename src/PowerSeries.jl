@@ -89,7 +89,7 @@ acsch(x::AbstractSeries) =
 
 function asech(x::AbstractSeries)
   rx = restrict(x)
-  asech(constant(x)) - polyint(polyder(x)*sqrt((1 - rx)/(1 + rx))/(rx*(rx - 1)))
+  asech(constant(x)) + polyint(polyder(x)*sqrt((1 - rx)/(1 + rx))/(rx*(rx - 1)))
 end
 
 acoth(x::AbstractSeries) = acoth(constant(x)) + polyint(polyder(x)/(1 - restrict(x)^2))

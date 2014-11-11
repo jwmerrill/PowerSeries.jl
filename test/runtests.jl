@@ -63,3 +63,56 @@ PowerSeries.generate(9)
 let x=series(0.0, 1.0, 0.0, 0.0)
   @test x*x == x^2
 end
+
+# Only 1 argument functions
+fns = [
+  sqrt,
+  exp,
+  log,
+  sin,
+  cos,
+  tan,
+  asin,
+  acos,
+  atan,
+  sinh,
+  cosh,
+  tanh,
+  asinh,
+  acosh,
+  atanh,
+  csc,
+  sec,
+  cot,
+  acsc,
+  asec,
+  acot,
+  csch,
+  sech,
+  coth,
+  acsch,
+  asech,
+  acoth,
+  gamma,
+  floor,
+  ceil,
+  round,
+  sign,
+  abs
+]
+
+for val in [-2.3, -1.2, -0.1, 0.7, 3.6]
+  for fn in fns
+    if (val < 1 && fn === acosh) continue end
+    if (val < 0 && fn === sqrt) continue end
+    if (val < 0 && fn === log) continue end
+    if (abs(val) > 1 && fn === asin) continue end
+    if (abs(val) > 1 && fn === acos) continue end
+    if (abs(val) > 1 && fn === atanh) continue end
+    if ((val < 0 || val > 1) && fn === asech) continue end
+    if (abs(val) < 1 && fn === acsc) continue end
+    if (abs(val) < 1 && fn === asec) continue end
+    if (abs(val) < 1 && fn === acoth) continue end
+    @test_approx_eq_eps constant(polyder(fn(series(val, 1.0)))) 5000*(fn(val + .0001) - fn(val- .0001)) .01
+  end
+end
