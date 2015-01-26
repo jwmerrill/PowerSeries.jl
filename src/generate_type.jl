@@ -83,6 +83,9 @@ function generate_type(n::Integer)
 
   @eval /(x::$Typ, c::Real) = $Typ($([:($(mem(:x, i))/c) for i = 0:n]...))
 
+  @eval isless(x::$Typ, c::Real) = isless($(mem(:x, 0)), c)
+  @eval isless(c::Real, x::$Typ) = isless(c, $(mem(:x, 0)))
+
   # TODO probably a better way than eval to get a type from a string
   return eval(Typ)
 end

@@ -64,6 +64,9 @@ let x=series(0.0, 1.0, 0.0, 0.0)
   @test x*x == x^2
 end
 
+@test series(1., 2., 3.) < 2.
+@test 0.5 < series(1., 2., 3.)
+
 # Only 1 argument functions
 fns = [
   sqrt,

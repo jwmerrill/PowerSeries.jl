@@ -1,6 +1,6 @@
 module PowerSeries
 
-import Base: convert, sqrt, exp, log, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, asinh, acosh, atanh, csc, sec, cot, acsc, asec, acot, csch, sech, coth, acsch, asech, acoth, gamma, polygamma, floor, ceil, round, sign, abs
+import Base: convert, sqrt, exp, log, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, asinh, acosh, atanh, csc, sec, cot, acsc, asec, acot, csch, sech, coth, acsch, asech, acoth, gamma, polygamma, floor, ceil, round, sign, abs, isless
 
 abstract AbstractSeries{T<:Real, N} <: Number
 
