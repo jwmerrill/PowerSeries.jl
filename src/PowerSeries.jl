@@ -1,6 +1,6 @@
 module PowerSeries
 
-import Base: convert, sqrt, exp, log, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, asinh, acosh, atanh, csc, sec, cot, acsc, asec, acot, csch, sech, coth, acsch, asech, acoth, gamma, polygamma, floor, ceil, round, sign, abs
+import Base: convert, sqrt, exp, log, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, asinh, acosh, atanh, csc, sec, cot, acsc, asec, acot, csch, sech, coth, acsch, asech, acoth, gamma, polygamma, floor, ceil, round, sign, abs, <
 
 abstract AbstractSeries{T<:Real, N} <: Number
 
@@ -111,6 +111,10 @@ ceil(x::AbstractSeries) = ceil(constant(x)) + polyint(polyder(x)*0)
 round(x::AbstractSeries) = round(constant(x)) + polyint(polyder(x)*0)
 sign(x::AbstractSeries) = sign(constant(x)) + polyint(polyder(x)*0)
 abs(x::AbstractSeries) = abs(constant(x)) + polyint(polyder(x)*sign(restrict(x)))
+
+<(x::AbstractSeries, c::Real) = constant(x) < c
+<(c::Real, x::AbstractSeries) = c < constant(x)
+<(x::AbstractSeries, y::AbstractSeries) = constant(x) < constant(y)
 
 generate(7)
 
