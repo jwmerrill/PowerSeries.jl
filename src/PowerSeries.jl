@@ -112,6 +112,9 @@ round(x::AbstractSeries) = round(constant(x)) + polyint(polyder(x)*0)
 sign(x::AbstractSeries) = sign(constant(x)) + polyint(polyder(x)*0)
 abs(x::AbstractSeries) = abs(constant(x)) + polyint(polyder(x)*sign(restrict(x)))
 
+<(x::AbstractSeries, c::Real) = constant(x) < c
+<(c::Real, x::AbstractSeries) = c < constant(x)
+
 generate(7)
 
 export series, restrict, constant, polyint, polyval, polyder
