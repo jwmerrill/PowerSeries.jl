@@ -70,6 +70,10 @@ end
 @test series(1.0, 2.0, 3.0) > 0.5
 @test !(series(1.0, 2.0, 3.0) < 1.0)
 @test !(series(1.0, 2.0, 3.0) > 1.0)
+@test series(1.0, 1.0) < series(2.0, 0.0)
+@test series(2.0, 0.0) > series(1.0, 1.0)
+@test !(series(1.0, 2.0) < series(1.0, 0.0))
+@test !(series(1.0, 0.0) > series(1.0, 2.0))
 
 # Only 1 argument functions
 fns = [

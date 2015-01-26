@@ -114,6 +114,7 @@ abs(x::AbstractSeries) = abs(constant(x)) + polyint(polyder(x)*sign(restrict(x))
 
 <(x::AbstractSeries, c::Real) = constant(x) < c
 <(c::Real, x::AbstractSeries) = c < constant(x)
+<(x::AbstractSeries, y::AbstractSeries) = constant(x) < constant(y)
 
 generate(7)
 
