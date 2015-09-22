@@ -1,5 +1,7 @@
 module PowerSeries
 
+using Compat
+
 import Base: convert, sqrt, exp, log, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, asinh, acosh, atanh, csc, sec, cot, acsc, asec, acot, csch, sech, coth, acsch, asech, acoth, gamma, polygamma, floor, ceil, round, sign, abs, <, /, *, ^, +, -
 
 abstract AbstractSeries{T<:Real, N} <: Number
@@ -46,7 +48,7 @@ end
 ^(x::AbstractSeries, y::Integer) = _series_pow_const(x, y)
 ^(x::AbstractSeries, y::Real) = _series_pow_const(x, y)
 
-^(::MathConst{:e}, y::AbstractSeries) = exp(y)
+^(::Irrational{:e}, y::AbstractSeries) = exp(y)
 ^(x::Real, y::AbstractSeries) = x^constant(y) + polyint(log(x)*x^restrict(y)*polyder(y))
 
 sqrt(x::AbstractSeries) = sqrt(constant(x)) + polyint(polyder(x)/(2*sqrt(restrict(x))))
