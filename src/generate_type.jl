@@ -1,5 +1,5 @@
-typ(n) = symbol(string("Series", n))
-elt(n) = symbol(string("c", n))
+typ(n) = Symbol(string("Series", n))
+elt(n) = Symbol(string("c", n))
 mem(s,n) = Expr(:., s, Expr(:quote, elt(n)))
 
 function generate_type(n::Integer)
