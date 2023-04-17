@@ -1,9 +1,11 @@
 PowerSeries.jl
 ==============
 
-Truncated Power Series for Julia
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://moble.github.io/PowerSeries.jl/stable/)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://moble.github.io/PowerSeries.jl/dev/)
+[![Build Status](https://github.com/moble/PowerSeries.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/moble/PowerSeries.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
-[![Build Status](https://travis-ci.org/jwmerrill/PowerSeries.jl.png?branch=master)](https://travis-ci.org/jwmerrill/PowerSeries.jl)
+Truncated Power Series for Julia
 
 PowerSeries.jl defines Series types that represent truncated power series by their coefficients. You can do arithmetic on Series and apply functions to series just as you would Real or Complex numbers. Here's an example session:
 
@@ -111,7 +113,7 @@ For taking first derivatives of code, see also [DualNumbers.jl](https://github.c
 
 Truncated series have performance advantages over symbolic derivatives for either deeply nested functions or high order derivatives.
 
-###Theory of operation
+### Theory of operation
 Computations of functions of a power series are based on the fundamental theorem of calculus:
 
 ![equation-1](http://latex.codecogs.com/png.latex?f%28x%20+%20%5Cepsilon%29%20%3D%20f%28x%29%20+%20%5Cint_x%5E%7Bx%20+%20%5Cepsilon%7D%20dx%20f%27%28x%29)
