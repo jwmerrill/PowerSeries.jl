@@ -1,5 +1,9 @@
 module PowerSeries
 
+### NOTE: `gamma` and `polygamma` used to appear in this list, but were moved to
+### SpecialFunctions.jl.  Rather than add that as a dependency, I've just removed them from the
+### list.
+
 import Base:
     convert,
     sqrt,
@@ -29,8 +33,6 @@ import Base:
     acsch,
     asech,
     acoth,
-    # gamma,
-    # polygamma,
     floor,
     ceil,
     round,
