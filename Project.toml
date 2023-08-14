@@ -1,7 +1,7 @@
 name = "PowerSeries"
 uuid = "84bf69ba-cd12-4c14-afd7-8e4ca43af7cc"
 authors = ["Michael Boyle <michael.oliver.boyle@gmail.com> and Jason Merrill <jwmerrill@gmail.com> and contributors"]
-version = "1.0.0-DEV"
+version = "1.0.0"
 
 [compat]
 julia = "1"
