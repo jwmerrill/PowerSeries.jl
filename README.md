@@ -138,3 +138,7 @@ f(x::AbstractSeries) = f(constant(x)) + polyint(polyder(x)*f'(restrict(x)))
 ```
 
 where `f'` should be replaced by a known derivative function.
+
+# History
+
+This repo was [forked](https://github.com/jwmerrill/PowerSeries.jl/pull/17) from [the original](https://github.com/jwmerrill/PowerSeries.jl/) by Jason Merrill, who did all of the real development.  So far, the only changes have been to update the Julia-related infrastructure for Julia 1.0+ and to register the package.
