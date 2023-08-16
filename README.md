@@ -1,3 +1,5 @@
+NOTE: the official version of this package has moved to https://github.com/moble/PowerSeries.jl
+
 PowerSeries.jl
 ==============
 
